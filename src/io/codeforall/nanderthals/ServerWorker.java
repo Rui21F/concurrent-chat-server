@@ -45,15 +45,14 @@ public class ServerWorker implements Runnable {
 
         try {
 
-
             while ((message = reader.readLine()) != null) {
-
-                if (message.startsWith("/")){
-                       server.messageDispatcher(message);
-                }
 
                 if (message.equals(".list")) {
                     server.printClientsServer();
+                }
+
+                if (message.startsWith(".quit")) {
+                    server.clientQuit(Thread.currentThread().getName());
                 }
 
                 if (message.startsWith(".w ")) {
@@ -86,22 +85,20 @@ public class ServerWorker implements Runnable {
 
     public void sendMessageToEachClient(String message) {
         try {
-            //if (!clientSocket.isClosed()) {
-            // server.;
-            writer.write(message);
-            writer.newLine();
-            writer.flush();
-            //}
+            if (!clientSocket.isClosed()) {
+                writer.write(message);
+                writer.newLine();
+                writer.flush();
+            }
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    public void sendWhisper(String target, String message) {
+    public void sendWhisper(String target, String message, String sender) {
 
         try {
-
-            writer.write(message);
+            writer.write(sender + "  has send you a whisper: " + message);
             writer.newLine();
             writer.flush();
         } catch (IOException e) {
@@ -109,9 +106,9 @@ public class ServerWorker implements Runnable {
         }
     }
 
-    public void closeClientSocket(String client){
+    public void closeClientSocket(String client) {
         try {
-            writer.write(name + " has left the chat");
+            writer.write(client + " has left the chat");
             writer.newLine();
             clientSocket.close();
             clientSocket.shutdownInput();
@@ -138,9 +135,4 @@ public class ServerWorker implements Runnable {
             System.out.println(e.getMessage());
         }
     }
-
-    public String getName() {
-        return name;
-    }
 }
-

@@ -65,7 +65,7 @@ public class Server {
         synchronized (arrayListServerWorkers) {
             for (ServerWorker serverWorker : arrayListServerWorkers) {
                 if (serverWorker.name != null && serverWorker.name.equals(targetUser)) {
-                    serverWorker.sendWhisper(serverWorker.name + " has send you a whisper: " + message, sender);
+                    serverWorker.sendWhisper(serverWorker.name, message, sender);
                 }
             }
         }
@@ -75,27 +75,12 @@ public class Server {
         synchronized (arrayListServerWorkers) {
 
             for (ServerWorker serverWorker : arrayListServerWorkers) {
-                if (serverWorker.name != null && serverWorker.name == client && clientSocket.isBound()) {
+                if (serverWorker.name != null && serverWorker.name.equals(client) && clientSocket.isBound()) {
+                    arrayListServerWorkers.remove(serverWorker);
                     serverWorker.closeClientSocket(client);
                 }
             }
 
         }
     }
-
-
-    public void messageDispatcher(String message) {
-
-        String[] splited = message.split(" ", 3);
-        String word1 = splited[0];
-        String target = splited[1];
-        String finalMessage = splited[2];
-
-        switch (word1) {
-            case "/list" -> printClientsServer();
-            //case "/w" -> sendWhisper(target, message);
-            case "/quit" -> clientQuit(word1);
-        }
-    }
 }
-
